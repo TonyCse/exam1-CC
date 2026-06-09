@@ -51,17 +51,16 @@ exports.createOrder = async (req, res) => {
 
     const savedOrder = await newOrder.save();
 
-    try {
-      await axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/notify`, {
-        to: 'syaob@yahoo.fr',
-        subject: 'Nouvelle Commande Créée',
-        text: `Une commande a été créée avec succès pour les produits suivants : \n${orderDetails
-          .map(item => `Produit ID : ${item.productId}, Quantité : ${item.quantity}`)
-          .join('\n')}`,
-      });
-    } catch (notifError) {
+    // Fire-and-forget : on ne bloque pas la réponse en attendant le service notifications
+    axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/notify`, {
+      to: 'syaob@yahoo.fr',
+      subject: 'Nouvelle Commande Créée',
+      text: `Une commande a été créée avec succès pour les produits suivants : \n${orderDetails
+        .map(item => `Produit ID : ${item.productId}, Quantité : ${item.quantity}`)
+        .join('\n')}`,
+    }).catch((notifError) => {
       logger.error("Erreur lors de l'envoi de la notification", { message: notifError.message });
-    }
+    });
 
     res.status(201).json({ message: 'Commande créée avec succès', order: savedOrder });
   } catch (error) {
