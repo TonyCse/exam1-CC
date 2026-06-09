@@ -1,15 +1,19 @@
-// server.js
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+const helmet = require('helmet');
 const connectDB = require('./config/db');
 const { authenticateToken, isAdmin } = require('./middlewares/authMiddleware');
 
 const app = express();
 connectDB();
 
-app.use(cors());
+app.use(helmet());
+app.use(cors({ origin: process.env.CORS_ORIGIN }));
 app.use(express.json());
+
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok', service: 'backend' }));
+
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));

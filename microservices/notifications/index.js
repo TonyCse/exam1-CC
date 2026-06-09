@@ -1,31 +1,27 @@
-// notifi/server.js
+require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
+const cors = require('cors');
+const helmet = require('helmet');
 const nodemailer = require('nodemailer');
-require('dotenv').config()
-//console.log(`process evn is ${JSON.stringify(process.env)}`)
 
 const app = express();
-app.use(bodyParser.json());
 
-// Configuration de Nodemailer
+app.use(helmet());
+app.use(cors({ origin: process.env.CORS_ORIGIN }));
+app.use(express.json());
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER, // Adresse Gmail
-    pass: process.env.EMAIL_APPLICATION_PASSWORD, // Mot de passe spécifique à l'application
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_APPLICATION_PASSWORD,
   },
 });
 
-console.log(`rocess.env.EMAIL_USER is ${process.env.EMAIL_USER} process.env.EMAIL_APPLICATION_PASSWORD is ${process.env.EMAIL_APPLICATION_PASSWORD}`);
-// Route pour envoyer un email
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok', service: 'notifications' }));
+
 app.post('/notify', async (req, res) => {
   const { to, subject, text } = req.body;
-  console.log(`to is ${to} subject is ${subject} text is ${text}`)
-
-  //const { message } = req.body;
-    //console.log(`Notification: ${text}`);
-    //res.send('Notification envoyée mail');
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -44,7 +40,6 @@ app.post('/notify', async (req, res) => {
   }
 });
 
-// Lancer le service Notification
 const PORT = process.env.NOTIFI_PORT || 4002;
 app.listen(PORT, () => {
   console.log(`Service de notification en écoute sur le port ${PORT}`);
