@@ -1,0 +1,44 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend
+
+      - name: Run backend tests
+        run: npm test --if-present
+        working-directory: backend
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Deploy backend
+        run: curl -s "${{ secrets.RENDER_DEPLOY_HOOK_BACKEND }}"
+
+      - name: Deploy gateway
+        run: curl -s "${{ secrets.RENDER_DEPLOY_HOOK_GATEWAY }}"
+
+      - name: Deploy notifications
+        run: curl -s "${{ secrets.RENDER_DEPLOY_HOOK_NOTIF }}"
+
+      - name: Deploy stock-management
+        run: curl -s "${{ secrets.RENDER_DEPLOY_HOOK_STOCK }}"
