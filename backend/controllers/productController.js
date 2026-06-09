@@ -1,6 +1,13 @@
 // controllers/productController.js
 const Product = require('../models/Product');
 
+/**
+ * @description Récupère la liste complète des produits depuis la base de données.
+ * @param {Request} req - Requête Express.
+ * @param {Response} res - Réponse Express.
+ * @returns {Promise<void>} JSON tableau de produits avec statut 200.
+ * @throws {500} En cas d'erreur de connexion ou de requête MongoDB.
+ */
 exports.getProducts = async (req, res) => {
   try {
     const products = await Product.find();
@@ -11,6 +18,16 @@ exports.getProducts = async (req, res) => {
   }
 };
 
+/**
+ * @description Met à jour la quantité en stock d'un produit identifié par son ID.
+ * Accessible uniquement aux administrateurs (protégé par authenticateToken + isAdmin).
+ * @param {Request} req - Requête Express. Paramètre :productId dans l'URL, { stock } dans le body.
+ * @param {Response} res - Réponse Express.
+ * @returns {Promise<void>} JSON { message, product } avec statut 200.
+ * @throws {400} Si le stock est négatif.
+ * @throws {404} Si le produit est introuvable.
+ * @throws {500} En cas d'erreur serveur inattendue.
+ */
 exports.updateProductStock = async (req, res) => {
   try {
     const { stock } = req.body;

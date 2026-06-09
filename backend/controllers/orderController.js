@@ -3,6 +3,18 @@ const axios = require('axios');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 
+/**
+ * @description Crée une nouvelle commande pour l'utilisateur authentifié.
+ * Les prix sont recalculés côté serveur depuis la base de données
+ * pour éviter toute manipulation côté client.
+ * Envoie une notification email après création (échec silencieux).
+ * @param {Request} req - Requête Express. req.user.userId requis.
+ *   Body : { items: Array<{ productId, quantity }>, shippingAddress, paymentMethod, shippingMethod }.
+ * @param {Response} res - Réponse Express.
+ * @returns {Promise<void>} JSON { message, order } avec statut 201.
+ * @throws {400} Si items est vide ou absent.
+ * @throws {500} Si un produit est introuvable ou en cas d'erreur MongoDB.
+ */
 exports.createOrder = async (req, res) => {
   const { items, shippingAddress, paymentMethod, shippingMethod } = req.body;
   const userId = req.user.userId;
@@ -14,7 +26,6 @@ exports.createOrder = async (req, res) => {
   }
 
   try {
-    // Recalcul du prix côté serveur — on ne fait pas confiance au prix envoyé par le client
     const productIds = items.map(item => item.productId);
     const products = await Product.find({ _id: { $in: productIds } });
     const productMap = {};
@@ -58,6 +69,15 @@ exports.createOrder = async (req, res) => {
   }
 };
 
+/**
+ * @description Supprime définitivement une commande par son identifiant MongoDB.
+ * Accessible uniquement aux administrateurs.
+ * @param {Request} req - Requête Express. Paramètre :id dans l'URL.
+ * @param {Response} res - Réponse Express.
+ * @returns {Promise<void>} JSON { message } avec statut 200.
+ * @throws {404} Si aucune commande ne correspond à l'identifiant fourni.
+ * @throws {500} En cas d'erreur MongoDB.
+ */
 exports.deleteOrder = async (req, res) => {
   const orderId = req.params.id;
   try {
@@ -72,6 +92,14 @@ exports.deleteOrder = async (req, res) => {
   }
 };
 
+/**
+ * @description Récupère toutes les commandes de la base de données.
+ * Accessible uniquement aux administrateurs.
+ * @param {Request} req - Requête Express.
+ * @param {Response} res - Réponse Express.
+ * @returns {Promise<void>} JSON tableau de commandes avec statut 200.
+ * @throws {500} En cas d'erreur MongoDB.
+ */
 exports.getOrders = async (req, res) => {
   try {
     const orders = await Order.find();
@@ -82,6 +110,15 @@ exports.getOrders = async (req, res) => {
   }
 };
 
+/**
+ * @description Valide une commande en passant son statut à "En cours de traitement".
+ * Accessible uniquement aux administrateurs.
+ * @param {Request} req - Requête Express. Paramètre :id dans l'URL.
+ * @param {Response} res - Réponse Express.
+ * @returns {Promise<void>} JSON { message, order } avec statut 200.
+ * @throws {404} Si aucune commande ne correspond à l'identifiant fourni.
+ * @throws {500} En cas d'erreur MongoDB.
+ */
 exports.validateOrder = async (req, res) => {
   const orderId = req.params.id;
   try {
@@ -100,6 +137,17 @@ exports.validateOrder = async (req, res) => {
   }
 };
 
+/**
+ * @description Met à jour le statut d'une commande existante.
+ * Les valeurs acceptées sont définies par l'enum du modèle Order.
+ * Accessible uniquement aux administrateurs.
+ * @param {Request} req - Requête Express. Paramètre :orderId dans l'URL, { status } dans le body.
+ * @param {Response} res - Réponse Express.
+ * @returns {Promise<void>} JSON { message, order } avec statut 200.
+ * @throws {400} Si le champ status est absent du body.
+ * @throws {404} Si aucune commande ne correspond à l'identifiant fourni.
+ * @throws {500} En cas d'erreur MongoDB.
+ */
 exports.updateOrderStatus = async (req, res) => {
   const { orderId } = req.params;
   const { status } = req.body;

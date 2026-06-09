@@ -16,6 +16,14 @@ const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
+/**
+ * @description Authentifie un utilisateur et retourne un JWT.
+ * Valide les champs via Joi avant tout accès base de données.
+ * @param {Request} req - Requête Express contenant { username, password } dans le body.
+ * @param {Response} res - Réponse Express.
+ * @returns {Promise<void>} JSON { token, role, username } avec statut 200, ou message d'erreur.
+ * @throws {500} En cas d'erreur serveur inattendue.
+ */
 exports.login = async (req, res) => {
   const { error } = loginSchema.validate(req.body, { abortEarly: false });
   if (error) {
@@ -47,6 +55,15 @@ exports.login = async (req, res) => {
   }
 };
 
+/**
+ * @description Crée un nouvel utilisateur après validation Joi et vérification d'unicité de l'email.
+ * Le mot de passe est hashé automatiquement par le pre-save hook du modèle User (bcrypt).
+ * @param {Request} req - Requête Express contenant { username, email, password } dans le body.
+ * @param {Response} res - Réponse Express.
+ * @returns {Promise<void>} JSON { message } avec statut 201, ou message d'erreur.
+ * @throws {400} Si l'email est déjà utilisé ou si la validation Joi échoue.
+ * @throws {500} En cas d'erreur serveur inattendue.
+ */
 exports.register = async (req, res) => {
   const { error } = registerSchema.validate(req.body, { abortEarly: false });
   if (error) {
