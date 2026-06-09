@@ -16,7 +16,8 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 ### Corrections de bugs (E27)
 
 - **Selects livraison/paiement — valeur par défaut trompeuse** : les selects affichaient visuellement "Colissimo" et "Carte bancaire" mais le state React (`CartContext`) était initialisé à `null`, envoyant `null` au backend si l'utilisateur ne modifiait pas les selects. Corrigé par l'ajout d'une `<option value="" disabled>` placeholder et initialisation du state à `''` — l'utilisateur doit explicitement choisir une valeur avant de valider.
-- **Confirmation de commande bloquante** : l'appel `await axios.post(notifications/notify)` bloquait la réponse HTTP pendant le cold start du service Render (30–60 s). Converti en fire-and-forget (`axios.post(...).catch(...)`) — la commande est confirmée immédiatement dès l'enregistrement en base, la notification part en arrière-plan.
+- **Confirmation de commande bloquante** : l'appel `await axios.post(notifications/notify)` bloquait la réponse HTTP pendant le cold start du service Render (30–60 s). Converti en fire-and-forget (`axios.post(...).catch(...)`) dans `orderController` et `adminController` — la réponse est immédiate, la notification part en arrière-plan.
+- **Décrémentation du stock manquante** : la validation d'une commande (`validateOrder`, `updateOrderStatus`) ne mettait pas à jour le stock produit en base. Création du service `backend/services/orderStockService.js` qui : agrège les quantités par produit, vérifie la disponibilité avant toute écriture, empêche la double décrémentation si la commande est déjà au statut "En cours de traitement", et applique les mises à jour via `bulkWrite` atomique MongoDB (`$inc`).
 
 ---
 

@@ -31,9 +31,9 @@ exports.updateOrderStatus = async (req, res) => {
     } else {
       await Order.findByIdAndUpdate(id, { status });
     }
-    await axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/notify`, {
+    axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/notify`, {
       message: `Le statut de la commande ${id} a été mis à jour en "${status}".`,
-    });
+    }).catch(() => {});
     res.json({ message: `Statut de la commande ${id} mis à jour` });
   } catch (error) {
     res.status(500).json({ message: 'Erreur de mise à jour du statut de la commande' });
@@ -53,9 +53,9 @@ exports.validateOrder = async (req, res) => {
     if (error) {
       return res.status(400).json({ message: error });
     }
-    await axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/notify`, {
+    axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/notify`, {
       message: `La commande ${id} a été validée.`,
-    });
+    }).catch(() => {});
     res.json({ message: `Commande ${id} validée` });
   } catch (error) {
     res.status(500).json({ message: 'Erreur lors de la validation de la commande' });
@@ -77,9 +77,9 @@ exports.updateProductStock = async (req, res) => {
 
   try {
     await Product.findByIdAndUpdate(id, { stock });
-    await axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/notify`, {
+    axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/notify`, {
       message: `Le stock du produit ${id} a été mis à jour à ${stock}.`,
-    });
+    }).catch(() => {});
     res.json({ message: `Stock du produit ${id} mis à jour` });
   } catch (error) {
     res.status(500).json({ message: 'Erreur lors de la mise à jour du stock du produit' });

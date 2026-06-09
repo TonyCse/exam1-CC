@@ -406,3 +406,6 @@ git push origin main
 | `6945803` | fix: selects livraison et paiement vides par defaut avec placeholder |
 | `0b42ab4` | fix: notification fire-and-forget pour eviter le blocage au passage de commande |
 | `234ac61` | docs: ajout fixes selects placeholder et notification fire-and-forget dans CHANGELOG |
+| `5a43b8f` | Update screenshot E22 |
+| `e8ece0d` | fix: decrementation stock a la validation de commande |
+| `de439f7` | docs: integration des screenshots dans RENDU_EXAM.md et mise a jour table commits |
