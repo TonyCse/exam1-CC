@@ -1,10 +1,30 @@
 // backend/controllers/authController.js
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const Joi = require('joi');
 const User = require('../models/User');
 require('dotenv').config();
 
+const registerSchema = Joi.object({
+  username: Joi.string().min(3).max(30).required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().min(8).required(),
+});
+
+const loginSchema = Joi.object({
+  username: Joi.string().required(),
+  password: Joi.string().required(),
+});
+
 exports.login = async (req, res) => {
+  const { error } = loginSchema.validate(req.body, { abortEarly: false });
+  if (error) {
+    return res.status(400).json({
+      error: 'Données invalides',
+      details: error.details.map(d => d.message),
+    });
+  }
+
   const { username, password } = req.body;
 
   try {
@@ -21,13 +41,21 @@ exports.login = async (req, res) => {
     );
 
     res.json({ token, role: user.role, username: user.username });
-  } catch (error) {
-    console.error('Erreur lors de la connexion', error);
+  } catch (err) {
+    console.error('Erreur lors de la connexion', err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };
 
 exports.register = async (req, res) => {
+  const { error } = registerSchema.validate(req.body, { abortEarly: false });
+  if (error) {
+    return res.status(400).json({
+      error: 'Données invalides',
+      details: error.details.map(d => d.message),
+    });
+  }
+
   const { username, email, password } = req.body;
 
   try {
@@ -36,13 +64,12 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: 'Cet email est déjà utilisé.' });
     }
 
-    // Le hash du mot de passe est fait dans le pre-save hook du modèle User (bcrypt.hash)
     const user = new User({ username, email, password });
     await user.save();
 
     res.status(201).json({ message: 'Utilisateur créé avec succès.' });
-  } catch (error) {
-    console.error('Erreur lors de l\'inscription', error);
+  } catch (err) {
+    console.error('Erreur lors de l\'inscription', err);
     res.status(500).json({ message: 'Une erreur est survenue.' });
   }
 };
