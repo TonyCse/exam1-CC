@@ -13,6 +13,13 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 - **Remplacement de tous les `console.log/error`** dans les quatre services par `logger.info()` / `logger.error()` avec contexte structuré (`{ message, stack }`).
 - **Dossiers `logs/`** créés avec `.gitkeep` dans les quatre services — fichiers de logs exclus du dépôt git.
 
+### Corrections de bugs (E27)
+
+- **Selects livraison/paiement — valeur par défaut trompeuse** : les selects affichaient visuellement "Colissimo" et "Carte bancaire" mais le state React (`CartContext`) était initialisé à `null`, envoyant `null` au backend si l'utilisateur ne modifiait pas les selects. Corrigé par l'ajout d'une `<option value="" disabled>` placeholder et initialisation du state à `''` — l'utilisateur doit explicitement choisir une valeur avant de valider.
+- **Confirmation de commande bloquante** : l'appel `await axios.post(notifications/notify)` bloquait la réponse HTTP pendant le cold start du service Render (30–60 s). Converti en fire-and-forget (`axios.post(...).catch(...)`) — la commande est confirmée immédiatement dès l'enregistrement en base, la notification part en arrière-plan.
+
+---
+
 ### Supervision (E26)
 
 - **Endpoint `GET /metrics`** ajouté sur le backend : expose les métriques Prometheus via `prom-client`. Métriques collectées : métriques système par défaut (CPU, mémoire, event loop) + histogramme de durée des requêtes HTTP (`http_request_duration_seconds`) + compteur total (`http_requests_total`) par méthode, route et code de statut.
