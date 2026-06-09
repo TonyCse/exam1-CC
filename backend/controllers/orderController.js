@@ -2,6 +2,7 @@
 const axios = require('axios');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const logger = require('../config/logger');
 
 /**
  * @description Crée une nouvelle commande pour l'utilisateur authentifié.
@@ -59,12 +60,12 @@ exports.createOrder = async (req, res) => {
           .join('\n')}`,
       });
     } catch (notifError) {
-      console.error('Erreur lors de l\'envoi de la notification', notifError);
+      logger.error("Erreur lors de l'envoi de la notification", { message: notifError.message });
     }
 
     res.status(201).json({ message: 'Commande créée avec succès', order: savedOrder });
   } catch (error) {
-    console.error('Erreur lors de la création de la commande', error);
+    logger.error('Erreur lors de la création de la commande', { message: error.message });
     res.status(500).json({ message: 'Une erreur est survenue lors de la création de la commande.' });
   }
 };
@@ -87,7 +88,7 @@ exports.deleteOrder = async (req, res) => {
     }
     res.status(200).json({ message: 'Commande supprimée' });
   } catch (error) {
-    console.error('Erreur lors de la suppression de la commande', error);
+    logger.error('Erreur lors de la suppression de la commande', { message: error.message });
     res.status(500).json({ message: 'Erreur serveur.' });
   }
 };
@@ -105,7 +106,7 @@ exports.getOrders = async (req, res) => {
     const orders = await Order.find();
     res.status(200).json(orders);
   } catch (error) {
-    console.error('Erreur lors de la récupération des commandes', error);
+    logger.error('Erreur lors de la récupération des commandes', { message: error.message });
     res.status(500).json({ message: 'Erreur serveur.' });
   }
 };
@@ -132,7 +133,7 @@ exports.validateOrder = async (req, res) => {
     }
     res.status(200).json({ message: `Commande ${orderId} validée avec succès.`, order });
   } catch (error) {
-    console.error('Erreur lors de la validation de la commande', error);
+    logger.error('Erreur lors de la validation de la commande', { message: error.message });
     res.status(500).json({ message: 'Erreur serveur.' });
   }
 };
@@ -169,7 +170,7 @@ exports.updateOrderStatus = async (req, res) => {
 
     res.status(200).json({ message: 'Statut mis à jour avec succès', order });
   } catch (error) {
-    console.error('Erreur lors de la mise à jour de la commande :', error);
+    logger.error('Erreur lors de la mise à jour de la commande', { message: error.message });
     res.status(500).json({ message: 'Erreur serveur.' });
   }
 };

@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const Joi = require('joi');
 const User = require('../models/User');
+const logger = require('../config/logger');
 require('dotenv').config();
 
 const registerSchema = Joi.object({
@@ -50,7 +51,7 @@ exports.login = async (req, res) => {
 
     res.json({ token, role: user.role, username: user.username });
   } catch (err) {
-    console.error('Erreur lors de la connexion', err);
+    logger.error('Erreur lors de la connexion', { message: err.message });
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };
@@ -86,7 +87,7 @@ exports.register = async (req, res) => {
 
     res.status(201).json({ message: 'Utilisateur créé avec succès.' });
   } catch (err) {
-    console.error('Erreur lors de l\'inscription', err);
+    logger.error("Erreur lors de l'inscription", { message: err.message });
     res.status(500).json({ message: 'Une erreur est survenue.' });
   }
 };

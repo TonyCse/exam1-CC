@@ -1,5 +1,6 @@
 // controllers/productController.js
 const Product = require('../models/Product');
+const logger = require('../config/logger');
 
 /**
  * @description Récupère la liste complète des produits depuis la base de données.
@@ -13,7 +14,7 @@ exports.getProducts = async (req, res) => {
     const products = await Product.find();
     res.json(products);
   } catch (error) {
-    console.error('Erreur lors de la récupération des produits :', error);
+    logger.error('Erreur lors de la récupération des produits', { message: error.message });
     res.status(500).json({ message: 'Erreur serveur.' });
   }
 };
@@ -47,7 +48,7 @@ exports.updateProductStock = async (req, res) => {
 
     res.json({ message: 'Stock mis à jour avec succès.', product });
   } catch (error) {
-    console.error('Erreur lors de la mise à jour du stock :', error);
+    logger.error('Erreur lors de la mise à jour du stock', { message: error.message });
     res.status(500).json({ message: 'Erreur serveur.' });
   }
 };

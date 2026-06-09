@@ -4,6 +4,22 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 
 ---
 
+## [1.2.0] — 2026-06-09
+
+### Journalisation (E25)
+
+- **Logger Winston créé** dans `backend/config/logger.js` et `gateway/config/logger.js` : format JSON horodaté en production, format colorisé en console, deux fichiers de sortie (`logs/app.log` et `logs/error.log`).
+- **Morgan intégré** comme middleware HTTP dans `backend/server.js` et `gateway/server.js` : chaque requête entrante est loggée via le stream Winston (niveau `info`).
+- **Remplacement de tous les `console.log/error`** dans les quatre services par `logger.info()` / `logger.error()` avec contexte structuré (`{ message, stack }`).
+- **Dossiers `logs/`** créés avec `.gitkeep` dans les quatre services — fichiers de logs exclus du dépôt git.
+
+### Supervision (E26)
+
+- **Endpoint `GET /metrics`** ajouté sur le backend : expose les métriques Prometheus via `prom-client`. Métriques collectées : métriques système par défaut (CPU, mémoire, event loop) + histogramme de durée des requêtes HTTP (`http_request_duration_seconds`) + compteur total (`http_requests_total`) par méthode, route et code de statut.
+- **Uptime Kuma** ajouté dans `docker-compose.yml` (service `uptime-kuma`, image officielle `louislam/uptime-kuma:1`, port `3001`, volume persistant). Permet de superviser les routes `/health` de tous les services avec alertes configurables (email, Slack, webhook).
+
+---
+
 ## [1.1.0] — 2026-06-09
 
 ### Sécurité

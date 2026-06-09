@@ -2,13 +2,30 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const morgan = require('morgan');
 const nodemailer = require('nodemailer');
+const { createLogger, format, transports } = require('winston');
+
+const logger = createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: format.combine(format.timestamp(), format.json()),
+  transports: [
+    new transports.Console({
+      format: format.combine(format.colorize(), format.simple()),
+    }),
+    new transports.File({ filename: 'logs/error.log', level: 'error' }),
+    new transports.File({ filename: 'logs/app.log' }),
+  ],
+});
 
 const app = express();
 
 app.use(helmet());
 app.use(cors({ origin: process.env.CORS_ORIGIN }));
 app.use(express.json());
+app.use(morgan('combined', {
+  stream: { write: (message) => logger.info(message.trim()) },
+}));
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -32,15 +49,15 @@ app.post('/notify', async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log('Email envoyé avec succès');
+    logger.info('Email envoyé avec succès', { to, subject });
     return res.status(200).json({ message: 'Email envoyé avec succès.' });
   } catch (error) {
-    console.error('Erreur lors de l\'envoi de l\'email', error);
-    return res.status(500).json({ message: 'Erreur lors de l\'envoi de l\'email.', error });
+    logger.error("Erreur lors de l'envoi de l'email", { message: error.message });
+    return res.status(500).json({ message: "Erreur lors de l'envoi de l'email.", error });
   }
 });
 
 const PORT = process.env.NOTIFI_PORT || 4002;
 app.listen(PORT, () => {
-  console.log(`Service de notification en écoute sur le port ${PORT}`);
+  logger.info(`Service de notification en écoute sur le port ${PORT}`);
 });
