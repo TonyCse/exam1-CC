@@ -380,7 +380,7 @@ git push origin main
 
 ![Documentation JSDoc générée](screenshots/E29-jsdoc.png)
 
-![Exemple de fonction documentée avec JSDoc](screenshots/E29-jsdoc.png)
+
 
 ---
 
