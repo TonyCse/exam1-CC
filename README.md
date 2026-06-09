@@ -50,10 +50,10 @@ npm start
 ## Lancement avec Docker
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
-> Uptime Kuma disponible sur http://localhost:3001 après `docker-compose up`
+> Uptime Kuma disponible sur http://localhost:3001 après `docker compose up`
 
 ## Variables d'environnement
 
