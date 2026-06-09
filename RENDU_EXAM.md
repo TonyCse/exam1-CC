@@ -52,7 +52,7 @@ Avant toute modification, il est nécessaire d'établir un état des lieux préc
 # Aucune commande bash — analyse par lecture directe du code source
 ```
 
-[SCREENSHOT — Capture de l'analyse initiale ou du code avant correction]
+![Services déployés sur Render](screenshots/E21-render-services.png)
 
 ---
 
@@ -82,7 +82,7 @@ cd backend && npm install --save-dev jsdoc
 mkdir backend/logs && touch backend/logs/.gitkeep
 ```
 
-[SCREENSHOT — Résultat de npm install / liste des dépendances dans package.json]
+![Variables d'environnement et dépendances](screenshots/E22-variables-env.png)
 
 ---
 
@@ -111,7 +111,7 @@ git status
 # Résultat attendu : aucun fichier .env dans les fichiers trackés
 ```
 
-[SCREENSHOT — Capture du git status montrant que les .env sont ignorés]
+![Certificat SSL HTTPS actif sur Render](screenshots/E23-ssl.png)
 
 ---
 
@@ -158,7 +158,7 @@ git commit -m "fix: correct security bugs and logic errors across backend and fr
 git push origin main
 ```
 
-[SCREENSHOT — Diff git des corrections apportées aux controllers]
+![Bugs détectés et corrigés](screenshots/E27-bugs-corriges.png)
 
 ---
 
@@ -197,7 +197,7 @@ git commit -m "fix: securite routes et URLs frontend"
 git push origin main
 ```
 
-[SCREENSHOT — Exemple de réponse 400 avec les détails Joi]
+![Failles de sécurité corrigées — validation et accès](screenshots/E28-securite.png)
 
 ---
 
@@ -248,7 +248,7 @@ git commit -m "feat: dockerisation complete"
 git push origin main
 ```
 
-[SCREENSHOT — docker-compose up avec les 6 services démarrés]
+![Supervision Uptime Kuma — monitoring des services](screenshots/E26-uptimerobot.png)
 
 ---
 
@@ -280,9 +280,9 @@ git push origin main
 **Configuration des secrets GitHub :**
 > Repo → Settings → Secrets and variables → Actions → New repository secret
 
-[SCREENSHOT — Pipeline GitHub Actions avec les deux jobs en vert]
+![Pipeline CI/CD GitHub Actions — jobs test et deploy en vert](screenshots/E24-github-actions.png)
 
-[SCREENSHOT — Configuration des secrets dans GitHub]
+![Journalisation Winston — logs sur Render](screenshots/E25-logs-render.png)
 
 ---
 
@@ -329,9 +329,9 @@ nslookup -type=TXT exam1.frvcneg.mongodb.net
 # Output : authSource=admin&replicaSet=atlas-f0vpbr-shard-0
 ```
 
-[SCREENSHOT — Sortie console : "Admin créé avec succès"]
+![Services Render déployés — application fonctionnelle](screenshots/E21-render-services.png)
 
-[SCREENSHOT — Sortie console : "Jeux de produits insérés avec succès !"]
+![Variables d'environnement configurées sur Render](screenshots/E22-variables-env.png)
 
 ---
 
@@ -378,9 +378,9 @@ git commit -m "docs: ajout commentaires JSDoc, CHANGELOG et RENDU_EXAM"
 git push origin main
 ```
 
-[SCREENSHOT — Page index.html de la documentation JSDoc ouverte dans un navigateur]
+![Documentation JSDoc générée](screenshots/E29-jsdoc.png)
 
-[SCREENSHOT — Exemple d'une fonction documentée dans la doc générée]
+![Exemple de fonction documentée avec JSDoc](screenshots/E29-jsdoc.png)
 
 ---
 
@@ -388,7 +388,7 @@ git push origin main
 
 | Commit | Message |
 |---|---|
-| `initial` | initial commit - code source exam |
+| `196cc96` | initial commit - code source exam |
 | `0584a98` | chore: add gitignore files per service and install security/logging dependencies |
 | `3f46124` | fix: correct security bugs and logic errors across backend and frontend |
 | `6e13329` | feat: validation Joi sur register et login |
@@ -398,3 +398,11 @@ git push origin main
 | `e24102c` | feat: CI/CD pipeline GitHub Actions avec test et deploy Render |
 | `ff8fd28` | docs: ajout commentaires JSDoc sur controllers et middlewares |
 | `76d9a2c` | docs: ajout CHANGELOG.md v1.1.0 |
+| `1af8af3` | fix: dotenv premier, helmet, cors et route /health sur tous les services |
+| `d863e38` | docs: ajout RENDU_EXAM.md avec etapes E21 a E29 |
+| `83255e7` | feat: journalisation Winston/Morgan et supervision Prometheus/Uptime Kuma |
+| `f0e9671` | fix: initialiser shippingMethod et paymentMethod dans CartContext |
+| `fa0c85e` | fix: ajout prefixe /api manquant dans toutes les URLs frontend |
+| `6945803` | fix: selects livraison et paiement vides par defaut avec placeholder |
+| `0b42ab4` | fix: notification fire-and-forget pour eviter le blocage au passage de commande |
+| `234ac61` | docs: ajout fixes selects placeholder et notification fire-and-forget dans CHANGELOG |
