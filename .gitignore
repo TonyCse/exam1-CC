@@ -1,17 +1,26 @@
 # Dependencies
 node_modules/
 */node_modules/
+**/node_modules/
 
 # Environnement
 .env
-*.env*
+.env.*
 !.env.example
 
 # Docker
 docker-compose.override.yml
 
 # Logs
+logs/
+*/logs/
+**/logs/
 *.log
+
+# Docs générées
+docs/
+*/docs/
+**/docs/
 
 # IDE
 .vscode/
@@ -27,3 +36,6 @@ data/db/
 
 # Autre
 .DS_Store
+
+# Claude
+.claude/
