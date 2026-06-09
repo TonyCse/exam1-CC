@@ -59,8 +59,8 @@ export const cartReducer = (state, action) => {
 export const CartProvider = ({ children }) => {
   const [cartState, dispatch] = useReducer(cartReducer, {
     cart: [],
-    shippingMethod: 'colissimo',
-    paymentMethod: 'Carte bancaire',
+    shippingMethod: '',
+    paymentMethod: '',
     shippingAddress: {
       street: "",
       city: "",
