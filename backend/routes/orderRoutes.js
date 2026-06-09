@@ -5,11 +5,10 @@ const { authenticateToken, isAdmin } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
-router.get('/', authenticateToken, isAdmin, getOrders); // Accès pour administrateurs
-router.post('/', authenticateToken, createOrder); // Accès pour utilisateurs connectés
-router.delete('/:id', authenticateToken, deleteOrder); // Accès pour administrateurs
-router.put('/:id/validate', authenticateToken, isAdmin, validateOrder); // Accès pour administrateurs
-router.put('/:orderId/status', authenticateToken, isAdmin, updateOrderStatus); // Accès pour administrateurs
-
+router.get('/', authenticateToken, isAdmin, getOrders);
+router.post('/', authenticateToken, createOrder);
+router.delete('/:id', authenticateToken, isAdmin, deleteOrder);
+router.put('/:id/validate', authenticateToken, isAdmin, validateOrder);
+router.put('/:orderId/status', authenticateToken, isAdmin, updateOrderStatus);
 
 module.exports = router;
