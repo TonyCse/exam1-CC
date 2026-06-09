@@ -24,9 +24,9 @@ services:
   notifications:
     build: ./microservices/notifications
     ports:
-      - '3001:3001'
+      - '4002:4002'
 
   stock-management:
     build: ./microservices/stock-management
     ports:
-      - '3002:3002'
+      - '4003:4003'

@@ -1,9 +1,8 @@
 // backend/controllers/adminController.js
 const axios = require('axios');
-const Order = require('../models/Order'); // Modèle pour les commandes
-const Product = require('../models/Product'); // Modèle pour les produits
+const Order = require('../models/Order');
+const Product = require('../models/Product');
 
-// Récupérer toutes les commandes
 exports.getOrders = async (req, res) => {
   try {
     const orders = await Order.find();
@@ -13,14 +12,13 @@ exports.getOrders = async (req, res) => {
   }
 };
 
-// Changer l'état d'une commande
 exports.updateOrderStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
   try {
     await Order.findByIdAndUpdate(id, { status });
-    await axios.post('http://localhost:3001/notify', {
+    await axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/notify`, {
       message: `Le statut de la commande ${id} a été mis à jour en "${status}".`,
     });
     res.json({ message: `Statut de la commande ${id} mis à jour` });
@@ -29,13 +27,12 @@ exports.updateOrderStatus = async (req, res) => {
   }
 };
 
-// Valider une commande
 exports.validateOrder = async (req, res) => {
   const { id } = req.params;
 
   try {
-    await Order.findByIdAndUpdate(id, { status: 'Validée' });
-    await axios.post('http://localhost:3001/notify', {
+    await Order.findByIdAndUpdate(id, { status: 'En cours de traitement' });
+    await axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/notify`, {
       message: `La commande ${id} a été validée.`,
     });
     res.json({ message: `Commande ${id} validée` });
@@ -44,7 +41,6 @@ exports.validateOrder = async (req, res) => {
   }
 };
 
-// Récupérer tous les produits
 exports.getProducts = async (req, res) => {
   try {
     const products = await Product.find();
@@ -54,14 +50,13 @@ exports.getProducts = async (req, res) => {
   }
 };
 
-// Mettre à jour le stock d'un produit
 exports.updateProductStock = async (req, res) => {
   const { id } = req.params;
   const { stock } = req.body;
 
   try {
     await Product.findByIdAndUpdate(id, { stock });
-    await axios.post('http://localhost:3001/notify', {
+    await axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/notify`, {
       message: `Le stock du produit ${id} a été mis à jour à ${stock}.`,
     });
     res.json({ message: `Stock du produit ${id} mis à jour` });

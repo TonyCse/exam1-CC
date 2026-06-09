@@ -18,11 +18,15 @@ const Admin = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const ordersResponse = await getOrders();
-      setOrders(ordersResponse.data);
+      try {
+        const ordersResponse = await getOrders();
+        setOrders(ordersResponse.data);
 
-      const productsResponse = await getProducts();
-      setProducts(productsResponse.data);
+        const productsResponse = await getProducts();
+        setProducts(productsResponse.data);
+      } catch (error) {
+        console.error('Erreur lors du chargement des données admin :', error);
+      }
     };
 
     fetchData();

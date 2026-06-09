@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 
-// Define the schema for individual order items
 const orderItemSchema = new mongoose.Schema({
   productId: {
-    type: mongoose.Schema.Types.ObjectId, // Reference to the product in your database
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',
     required: true,
   },
@@ -18,15 +17,14 @@ const orderItemSchema = new mongoose.Schema({
   },
 });
 
-// Define the schema for the entire order
 const orderSchema = new mongoose.Schema(
   {
     userId: {
-      type: mongoose.Schema.Types.ObjectId, // Reference to the user in your database
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    items: [orderItemSchema], // Array of order items
+    items: [orderItemSchema],
     total: {
       type: Number,
       required: true,
@@ -52,21 +50,12 @@ const orderSchema = new mongoose.Schema(
       enum: ['colissimo', 'chronopost'],
       required: true,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now,
-    },
   },
   {
-    timestamps: true, // Automatically adds createdAt and updatedAt fields
+    timestamps: true,
   }
 );
 
-// Create the model
 const Order = mongoose.model('Order', orderSchema);
 
 module.exports = Order;

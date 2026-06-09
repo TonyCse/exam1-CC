@@ -10,9 +10,11 @@ export const cartReducer = (state, action) => {
       );
 
       if (existingProductIndex >= 0) {
-        const updatedCart = [...state.cart];
-        updatedCart[existingProductIndex].quantity +=
-          action.payload.quantity || 1;
+        const updatedCart = state.cart.map((item, index) =>
+          index === existingProductIndex
+            ? { ...item, quantity: item.quantity + (action.payload.quantity || 1) }
+            : item
+        );
         return { ...state, cart: updatedCart };
       } else {
         return {
@@ -26,7 +28,7 @@ export const cartReducer = (state, action) => {
         ...state,
         cart: state.cart.map((item) =>
           item.id === action.payload.id
-            ? { ...item, quantity: Math.max(item.quantity - 1, 1) } // Ne peut pas être inférieur à 1
+            ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
             : item
         ),
       };
@@ -45,15 +47,16 @@ export const cartReducer = (state, action) => {
 
     case "SET_PAYMENT_METHOD":
       return { ...state, paymentMethod: action.payload };
+
     case "SET_SHIPPING_ADDRESS":
       return { ...state, shippingAddress: action.payload };
+
     default:
       return state;
   }
 };
 
 export const CartProvider = ({ children }) => {
-
   const [cartState, dispatch] = useReducer(cartReducer, {
     cart: [],
     shippingMethod: null,
@@ -71,7 +74,6 @@ export const CartProvider = ({ children }) => {
       {children}
     </CartContext.Provider>
   );
-  
 };
 
 export const useCart = () => useContext(CartContext);
