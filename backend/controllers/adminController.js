@@ -2,6 +2,7 @@
 const axios = require('axios');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const { validateOrderAndDecrementStock } = require('../services/orderStockService');
 
 exports.getOrders = async (req, res) => {
   try {
@@ -17,7 +18,19 @@ exports.updateOrderStatus = async (req, res) => {
   const { status } = req.body;
 
   try {
-    await Order.findByIdAndUpdate(id, { status });
+    if (status === 'En cours de traitement') {
+      const { order, error } = await validateOrderAndDecrementStock(id);
+
+      if (!order) {
+        return res.status(404).json({ message: 'Commande introuvable.' });
+      }
+
+      if (error) {
+        return res.status(400).json({ message: error });
+      }
+    } else {
+      await Order.findByIdAndUpdate(id, { status });
+    }
     await axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/notify`, {
       message: `Le statut de la commande ${id} a été mis à jour en "${status}".`,
     });
@@ -31,7 +44,15 @@ exports.validateOrder = async (req, res) => {
   const { id } = req.params;
 
   try {
-    await Order.findByIdAndUpdate(id, { status: 'En cours de traitement' });
+    const { order, error } = await validateOrderAndDecrementStock(id);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Commande introuvable.' });
+    }
+
+    if (error) {
+      return res.status(400).json({ message: error });
+    }
     await axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/notify`, {
       message: `La commande ${id} a été validée.`,
     });

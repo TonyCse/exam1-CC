@@ -3,6 +3,7 @@ const axios = require('axios');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const logger = require('../config/logger');
+const { validateOrderAndDecrementStock } = require('../services/orderStockService');
 
 /**
  * @description Crée une nouvelle commande pour l'utilisateur authentifié.
@@ -122,13 +123,13 @@ exports.getOrders = async (req, res) => {
 exports.validateOrder = async (req, res) => {
   const orderId = req.params.id;
   try {
-    const order = await Order.findByIdAndUpdate(
-      orderId,
-      { status: 'En cours de traitement' },
-      { new: true }
-    );
+    const { order, error } = await validateOrderAndDecrementStock(orderId);
     if (!order) {
       return res.status(404).json({ message: 'Commande introuvable.' });
+    }
+
+    if (error) {
+      return res.status(400).json({ message: error });
     }
     res.status(200).json({ message: `Commande ${orderId} validée avec succès.`, order });
   } catch (error) {
@@ -157,11 +158,22 @@ exports.updateOrderStatus = async (req, res) => {
       return res.status(400).json({ message: 'Le statut est requis.' });
     }
 
-    const order = await Order.findByIdAndUpdate(
-      orderId,
-      { status },
-      { new: true }
-    );
+    let order;
+
+    if (status === 'En cours de traitement') {
+      const result = await validateOrderAndDecrementStock(orderId);
+      order = result.order;
+
+      if (result.error) {
+        return res.status(400).json({ message: result.error });
+      }
+    } else {
+      order = await Order.findByIdAndUpdate(
+        orderId,
+        { status },
+        { new: true }
+      );
+    }
 
     if (!order) {
       return res.status(404).json({ message: 'Commande non trouvée.' });
