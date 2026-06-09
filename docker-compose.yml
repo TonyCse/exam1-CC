@@ -3,7 +3,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - '3000:3000'
+      - '3000:80'
     depends_on:
       - backend
 
@@ -15,6 +15,13 @@ services:
       - MONGO_URI=mongodb://mongo:27017/mydatabase
     depends_on:
       - mongo
+
+  gateway:
+    build: ./gateway
+    ports:
+      - '8000:8000'
+    depends_on:
+      - backend
 
   mongo:
     image: mongo
